@@ -1,0 +1,10 @@
+.v-label-wrap pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 16px;
+}
+
+v-textarea-big {
+    color:red;
+    font-size:50px;
+}
