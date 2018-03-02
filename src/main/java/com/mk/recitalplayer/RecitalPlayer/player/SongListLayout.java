@@ -7,6 +7,7 @@ import java.util.Set;
 import com.mk.recitalplayer.RecitalPlayer.RecitalSong;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.event.selection.SelectionListener;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
@@ -32,10 +33,11 @@ public class SongListLayout implements SongList {
 	public Component createLayout(List<RecitalSong> songs) {
 		
 		this.songs = songs;
-		songGrid.setWidth("100%");
 		songGrid.setHeightMode(HeightMode.UNDEFINED);
-
+		songGrid.setWidth("100%");
+		
 		songGrid.setItems(songs);
+		
 		songGrid.setHeaderVisible(false);
 		songGrid.addColumn(RecitalSong::getHTMLDescription).setRenderer(new HtmlRenderer())
 				.setSortable(false);
@@ -107,7 +109,7 @@ public class SongListLayout implements SongList {
 		this.preferVideo = preferVideo;
 	}
 
-	
+
 	
 	
 }
