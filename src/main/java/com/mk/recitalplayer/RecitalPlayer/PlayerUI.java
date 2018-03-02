@@ -34,7 +34,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.ValoTheme;
 
-@StyleSheet("playerui.css")
+@StyleSheet("vaadin://playerui.css")
 @SpringUI
 public class PlayerUI extends UI {
 
