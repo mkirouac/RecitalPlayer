@@ -7,30 +7,34 @@ import java.util.Set;
 import com.mk.recitalplayer.RecitalPlayer.RecitalSong;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.event.selection.SelectionListener;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridRowDragger;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
+
 public class SongListLayout implements SongList {
 
 
+	//TODO Should really keep the first grid instance, make it final.
 	
 	private final List<CurrentSongChangedListener> currentSongChangedListeners = new ArrayList<>();
-	private final Grid<RecitalSong> songGrid = new Grid<>();
+	private Grid<RecitalSong> songGrid = new Grid<>();
 	private List<RecitalSong> songs;
 	private boolean preferVideo;
 
 	@Override
 	public void selectSong(RecitalSong song) {
-		// TODO Auto-generated method stub
 
+		onCurrentSongChanged(song);
 	}
 	
 	@Override
 	public Component createLayout(List<RecitalSong> songs) {
+		
+		songGrid = new Grid<>();
+		currentSongChangedListeners.clear();
 		
 		this.songs = songs;
 		songGrid.setHeightMode(HeightMode.UNDEFINED);

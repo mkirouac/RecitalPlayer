@@ -14,6 +14,7 @@ import com.mk.recitalplayer.RecitalPlayer.player.CurrentSongLayout;
 import com.mk.recitalplayer.RecitalPlayer.player.SongList;
 import com.mk.recitalplayer.RecitalPlayer.player.SongListLayout;
 import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.event.selection.SingleSelectionEvent;
@@ -35,6 +36,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.ValoTheme;
 
 @StyleSheet("vaadin://playerui.css")
+@Theme("nightly")
 @SpringUI
 public class PlayerUI extends UI {
 
@@ -120,6 +122,12 @@ public class PlayerUI extends UI {
 				songs = forumRecitalParser.parse(recital);
 				playerSplitPanel.setFirstComponent(songList.createLayout(songs));
 				playerSplitPanel.setSecondComponent(currentSong.createLayout());
+				
+				//TODO Handle this better
+				songList.addCurrentSongChangedEventListener((song, preferVideo) -> {
+					currentSong.setCurrentSong(song, preferVideo);
+					exportComments(songs);
+				});
 			}
 		});
 
