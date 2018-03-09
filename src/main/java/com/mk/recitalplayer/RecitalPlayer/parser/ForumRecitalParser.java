@@ -27,6 +27,9 @@ public class ForumRecitalParser {
 		this.configurationProperties = configurationProperties;
 	}
 	
+	
+	
+	
 	public List<RecitalSong> parse(String recitalName) {
 		
 		String[] recitalUrls = configurationProperties.getForumRecital().get(recitalName);
@@ -54,6 +57,8 @@ public class ForumRecitalParser {
 			//Element channelDiv = row.select(".gr_row_head_chaine .link_to_station").first();
 			Elements postRows = post.select("tr");
 	
+			//TODO, if postRows=0, older forum posts. Handle them separately
+			
 			Map<String, String> postDataMap = new HashMap<>();
 			String mp3Url = "";
 			

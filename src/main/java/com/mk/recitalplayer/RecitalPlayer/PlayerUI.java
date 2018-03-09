@@ -29,6 +29,8 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.ItemCaptionGenerator;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -86,9 +88,77 @@ public class PlayerUI extends UI {
 
 	private void initializeMainUI() {
 
-		//TODO Eventually add a desktop version where everything would fit to screen.
-		
+		// TODO Eventually add a desktop version where everything would fit to screen.
+
 		initializeOptionsLayout();
+
+		// Recital selection
+		List<String> recitals = new ArrayList<>();
+		for (String recital : configurationProperties.getForumRecital().keySet()) {
+
+			recitals.add(recital);
+		}
+
+		recitals.sort((a, b) -> {
+			return b.compareTo(a);
+		});
+
+		NativeSelect<String> recitalSelectionBox = new NativeSelect<>("Current recital: ");
+		recitalSelectionBox.setItems(recitals);
+		recitalSelectionBox.setEmptySelectionAllowed(false);
+		recitalSelectionBox.setItemCaptionGenerator(new ItemCaptionGenerator<String>() {
+
+			@Override
+			public String apply(String item) {
+				//Ok.. not clean but kind of works..
+				StringBuilder sb = new StringBuilder();
+				if (item.length() == 9) {
+					for(int i = 0; i < 7; i++) {
+						sb.append(item.charAt(i));
+					}
+					sb.append(" ");
+					sb.append(item.substring(7));
+				} else {
+
+					// add spaces between the words
+					for (int i = 0; i < item.length(); i++) {
+						char letter = item.charAt(i);
+						if (i != 0 && Character.isUpperCase(letter)) {
+							sb.append(' ');
+							sb.append(Character.toLowerCase(letter));
+						} else {
+							sb.append(letter);
+						}
+
+					}
+				}
+				return sb.toString();
+			}
+		});
+		recitalSelectionBox.addSelectionListener(new SingleSelectionListener<String>() {
+
+			@Override
+			public void selectionChange(SingleSelectionEvent<String> event) {
+				String recital = event.getValue();
+				PlayerSession.getCurrent().setCurrentRecital(recital);
+				songs = forumRecitalParser.parse(recital);
+				playerSplitPanel.setFirstComponent(songList.createLayout(songs));
+				playerSplitPanel.setSecondComponent(currentSong.createLayout());
+
+				// TODO Handle this better
+				songList.addCurrentSongChangedEventListener((song, preferVideo) -> {
+					currentSong.setCurrentSong(song, preferVideo);
+					exportComments(songs);
+				});
+			}
+		});
+
+		recitalSelectionBox.addStyleName(ValoTheme.COMBOBOX_TINY);
+		recitalSelectionBox.setSelectedItem(configurationProperties.getDefaultForumRecital());
+
+		recitalSelectionBox.setWidth("450px");
+
+		mainLayout.addComponent(recitalSelectionBox);
 
 		// Player split panel
 		playerSplitPanel.setSplitPosition(25f);
@@ -102,39 +172,6 @@ public class PlayerUI extends UI {
 
 	private void initializeOptionsLayout() {
 		HorizontalLayout optionsLayout = new HorizontalLayout();
-
-		// Recital selection
-		List<String> recitals = new ArrayList<>();
-		for (String recital : configurationProperties.getForumRecital().keySet()) {
-
-			recitals.add(recital);
-		}
-		ComboBox<String> recitalSelectionBox = new ComboBox<>("Current recital: ");
-		recitalSelectionBox.setItems(recitals);
-		recitalSelectionBox.setEmptySelectionAllowed(false);
-
-		recitalSelectionBox.addSelectionListener(new SingleSelectionListener<String>() {
-
-			@Override
-			public void selectionChange(SingleSelectionEvent<String> event) {
-				String recital = event.getValue();
-				PlayerSession.getCurrent().setCurrentRecital(recital);
-				songs = forumRecitalParser.parse(recital);
-				playerSplitPanel.setFirstComponent(songList.createLayout(songs));
-				playerSplitPanel.setSecondComponent(currentSong.createLayout());
-				
-				//TODO Handle this better
-				songList.addCurrentSongChangedEventListener((song, preferVideo) -> {
-					currentSong.setCurrentSong(song, preferVideo);
-					exportComments(songs);
-				});
-			}
-		});
-
-		recitalSelectionBox.addStyleName(ValoTheme.COMBOBOX_TINY);
-		recitalSelectionBox.setSelectedItem(configurationProperties.getDefaultForumRecital());
-
-		optionsLayout.addComponent(recitalSelectionBox);
 
 		// Textfield to display the current comments session key
 		// TODO Need to improve change of session.
@@ -172,19 +209,18 @@ public class PlayerUI extends UI {
 		songList.setPreferVideo(true);
 
 		preferVideoOption.addStyleName(ValoTheme.CHECKBOX_SMALL);
-		
+
 		optionsLayout.addComponent(preferVideoOption);
 
-		
 		Button showOptionsButton = new Button(VaadinIcons.PLUS.getHtml() + " Options");
 		showOptionsButton.addStyleName(ValoTheme.BUTTON_TINY);
 		showOptionsButton.addStyleName(ValoTheme.BUTTON_LINK);
 		showOptionsButton.setCaptionAsHtml(true);
 		showOptionsButton.addClickListener(new Button.ClickListener() {
-			
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(optionsLayout.isVisible()) {
+				if (optionsLayout.isVisible()) {
 					optionsLayout.setVisible(false);
 					showOptionsButton.setCaption(VaadinIcons.PLUS.getHtml() + " Options");
 				} else {
@@ -193,10 +229,10 @@ public class PlayerUI extends UI {
 				}
 			}
 		});
-		
+
 		mainLayout.addComponent(showOptionsButton);
 		optionsLayout.setVisible(false);
-		
+
 		mainLayout.addComponent(optionsLayout);
 
 	}
