@@ -35,7 +35,7 @@ class CommentEntity implements Serializable{
 	@NotNull
 	private @Getter @Setter String songIndex;
 	
-	@Column(name ="Comment") 
+	@Column(name ="Comment", columnDefinition = "TEXT") 
 	@NotNull
 	private @Getter @Setter String comment;
 	
